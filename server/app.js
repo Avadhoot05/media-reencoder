@@ -1,24 +1,20 @@
 // import ffmpeg from 'fluent-ffmpeg';
 import express from 'express';
+import cors from 'cors';
+import bodyParser from "body-parser";
+import router from "./routes.js";
 
 const app = express();
 app.use(express.json());
+app.use(cors())
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.json());
+var oneWeek = 86400000*7;
+app.use(express.static("./public", { maxAge: oneWeek, lastModified: true }));
 
-const gotRequest =  (req,res) => {
-    console.log("got req");
-    if(req)
-        console.log(req.body);
-    else
-        console.log("no body")
-}
-
-
-const router = express.Router();
-router.post('/upload', gotRequest);
 app.use('/', router);
 
-
-const port =  3000;
+const port =  process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running at ${port}`);
   });
