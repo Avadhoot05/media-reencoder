@@ -1,7 +1,7 @@
 import express from 'express';
 import { routes } from './constant.js';
 import { VideoUpload } from './controller/VideoController.js';
-import { upload } from './Middleware/VideoUploadMiddleware.js';
+import { upload } from './middleware/VideoUploadMiddleware.js';
 
 
 const router = express.Router();
