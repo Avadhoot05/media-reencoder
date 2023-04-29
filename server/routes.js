@@ -7,7 +7,7 @@ import { upload } from './middleware/VideoUploadMiddleware.js';
 const router = express.Router();
 router.post(routes.VIDEO_UPLOAD, upload.fields([
     {
-      name: "videos",
+      name: "video",
       maxCount: 5,
     },
   ]), 
