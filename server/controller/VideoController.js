@@ -46,7 +46,7 @@ export const VideoUpload =  (req,res) => {
         })
         .run();
         
-      res.json({ message: "Media created successfully" });
+      res.json({ fileId: newUploadedFileName });
     } catch (error) {
       console.log(error);
       res.status(400).json(error);
