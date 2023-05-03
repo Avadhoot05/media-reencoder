@@ -4,6 +4,7 @@ import cors from 'cors';
 import bodyParser from "body-parser";
 import router from "./routes.js";
 import dotenv from 'dotenv';
+import { Processor, Job } from './encoder/processor.js';
 
 
 import http from 'http';
@@ -35,9 +36,11 @@ console.log(`WS Server is running at ${WS_SERVER_PORT}`);
 
 const wsServer = new webSocket.server({
 	httpServer: server
-})
+});
 
-const processQueue = [];
+let processor = new Processor();
+
+
 
 wsServer.on('request', function(req) {
   	console.log('[', new Date(), '] ', 'recieved new connection from origin : ', req.origin);
@@ -51,17 +54,14 @@ wsServer.on('request', function(req) {
 			console.log('[', new Date(), '] ', 'recieved message  : ', message.utf8Data);
 		
 			const data = JSON.parse(message.utf8Data);
-			if(data.action == 'enque')
+			if(data.type == 'enque')
 			{
 				//TODO: make a redis bull queue similar to this.
-				processQueue.push({
-					'fileId' : data.fileId, 
-					'connection': connection	
-				});
+				let job = new Job(data.newUploadedFileName, data.uploadedFileFormat, connection, data.action, data.actionParam);
+				processor.AddToQueue(job);
+				processor.ProcessJobs();
 			}
-			
-			console.log("Queue>>");
-			console.log(processQueue);
+		
 			connection.sendUTF(message.utf8Data);
 		}	
 	});

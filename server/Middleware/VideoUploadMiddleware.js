@@ -13,7 +13,9 @@ var storage = multer.diskStorage({
 		const newUploadedFileName = MEDIA_NAME_PREFIX + "_" + Date.now();
       	req.body.newUploadedFileName = newUploadedFileName;
 
-    	const newUploadedFileNameWithExt = newUploadedFileName + path.extname(file.originalname)
+    	const newUploadedFileNameWithExt = newUploadedFileName + path.extname(file.originalname);
+		req.body.newUploadedFileName = newUploadedFileName;
+		req.body.uploadedFileFormat = path.extname(file.originalname);
     	cb(null, newUploadedFileNameWithExt);
   	}
 });
