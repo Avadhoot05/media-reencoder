@@ -1,5 +1,5 @@
 import { Encoder } from "./encoder.js";
-import path from 'path';
+
 
 export const ACTION = Object.freeze({
     NONE: 0, 
@@ -44,6 +44,7 @@ export class Job
 
 
 }
+
 export class Processor
 {
     constructor()
@@ -88,21 +89,32 @@ export class Processor
         let job = this.queue[0];
         this.queue.splice(0, 1);
         this.bProcessing = true;
-        this.encoder.Encode(job, (bSuccess, err) => {
+        let connection = job.GetConnection();
+        this.encoder.Encode(job, (res, err) => {
             this.bProcessing = false;
 
-            if(bSuccess)
+            let resp;
+            if(err)
             {
-                console.log("Done" ,  job.GetFileName());
-                //send success packet via conn about success
+                console.log("error" ,  job.GetFileName());
+                resp = {
+                    "type": "reencodeResponse",
+                    "bSuccess": false,
+                }  
             }
             else
             {
-                console.log("error" ,  job.GetFileName());
-                //send failure packet via conn about success
-                
+                console.log("Done" ,  res);
+                resp = {
+                    "type": "reencodeResponse", 
+                    "bSuccess": true,
+                    "strOutputFilePath": res["strOutputFilePath"]
+                };
+               
             }
 
+             //send packet via conn
+            connection.send(JSON.stringify(resp));
             this.ProcessJobs();
 
         });

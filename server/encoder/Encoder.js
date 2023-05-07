@@ -51,16 +51,18 @@ export class Encoder
         ffmpeg(strFilePathToProcess)
         .output(strOutputFilePath)
         .videoCodec("libx264")
-        .fps(200)
+        .fps(fps)
         .on("error", function(err){
             console.log(err);
-            onComplete(false, err);
+            onComplete(null, err);
         })
         .on("progess", function(progress){
             console.log(progress);
         })
         .on("end", function(){
-            onComplete(true, null);
+            onComplete({
+                "strOutputFilePath": strOutputFilePath
+            }, null);
         })
         .run();
     }

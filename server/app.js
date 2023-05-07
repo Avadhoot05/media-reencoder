@@ -5,11 +5,15 @@ import bodyParser from "body-parser";
 import router from "./routes.js";
 import dotenv from 'dotenv';
 import { Processor, Job } from './encoder/processor.js';
+import { fileURLToPath } from 'url';
 
-
+import path from 'path';
 import http from 'http';
 import webSocket from 'websocket';
 
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -17,9 +21,8 @@ app.use(cors())
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
 dotenv.config({ path: "./config.env" });
-var oneWeek = 86400000*7;
-app.use(express.static("./public", { maxAge: oneWeek, lastModified: true }));
 
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use('/', router);
 
 const port =  process.env.PORT;
@@ -61,8 +64,6 @@ wsServer.on('request', function(req) {
 				processor.AddToQueue(job);
 				processor.ProcessJobs();
 			}
-		
-			connection.sendUTF(message.utf8Data);
 		}	
 	});
   }
